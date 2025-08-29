@@ -62,7 +62,7 @@ echo "Hello from Alice" > sample.txt
 ./client ALICE password sample.txt
 ```
 
-Default users and sample password are initialized in the KDC source for demo convenience. See `kdc.c` for details.
+Default users and sample password are initialized in the KDC source for now. See `kdc.c` for details.
 
 ---
 
@@ -87,31 +87,9 @@ Example quick conversion command (if using system call in the server):
 system("img2pdf input.jpg -o output.pdf");
 ```
 
----
+---  
 
-## Wireshark / tcpdump evidence
-Capture packets while performing the demo:
-```bash
-sudo tcpdump -i lo -w capture.pcap tcp port 9001 or tcp port 9010
-# run the demo, then Ctrl+C to stop capture
-```
-Open `capture.pcap` in Wireshark and filter:
-- `tcp.port == 9001` (KDC)
-- `tcp.port == 9010` (Print Server)
-
-Use `tshark` to extract hex/binary payloads:
-```bash
-tshark -r capture.pcap -x -Y "tcp.port==9010" > print_hex_9010.txt
-```
-Include `.pcap` and screenshots showing:
-- KDC challenge-response packets,
-- KDC → Client ticket packet,
-- Client → Print Server ticket packet,
-- Print Server → Client encrypted PDF packet.
-
----
-
-## Known limitations & notes
+## Limitations & notes
 - **Fixed salt & demo passwords**: PBKDF2 uses a fixed salt and demo passwords are seeded in the KDC for convenience. Replace with per-user random salts and a secure user store for production.
 - **Ticket replay**: The demo shows basic expiry but does not maintain a replay cache. For production, store used nonces/tickets or use sequence numbers.
 - **Logging**: Servers print nonces / IVs and debug info to stdout for grading. This is insecure in production.
@@ -119,21 +97,3 @@ Include `.pcap` and screenshots showing:
 
 ---
 
-## What to submit
-- Source code (`kdc.c`, `prnsrv.c`, `client.c`).
-- Makefile and helper scripts.
-- `capture.pcap` and screenshots (Wireshark) showing the required protocol steps.
-- Short `how-to-run` steps (this file) and notes about the environment used to test.
-
----
-
-## Need an automated run script or a README tweak?
-I can:
-- generate a `run_demo.sh` that builds everything, launches KDC & PrnSrv in the background, runs the client and captures a `tcpdump` file; **or**
-- produce a version of `prnsrv.c` that adds `img2pdf`-based image conversion and a short demo image.
-
-Tell me which you prefer and I will create it.
-
----
-
-**EOF**
